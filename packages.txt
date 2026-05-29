@@ -1,0 +1,20 @@
+fastfetch
+ripgrep
+bat
+bat-extras
+eza
+fd
+fzf
+git
+git-delta
+less
+man-db
+neovim
+wl-clipboard # or other clipboard
+zip
+unzip
+openssh
+
+# only Arch Linux
+diffutils
+reflector
