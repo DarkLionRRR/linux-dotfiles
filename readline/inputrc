@@ -1,0 +1,17 @@
+# history search rebind
+"\C-p": history-search-backward
+"\C-n": history-search-forward
+
+# completion config
+set show-all-if-ambiguous On
+set colored-stats On
+set visible-stats On
+set mark-symlinked-directories On
+set colored-completion-prefix On
+set menu-complete-display-prefix On
+set completion-ignore-case On
+
+TAB: menu-complete
+
+# macros
+"\es": "\C-asudo \C-e"
