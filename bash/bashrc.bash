@@ -22,8 +22,8 @@ export VISUAL=nvim
 export MANPAGER='nvim +Man!'
 
 DOTFILES_DIR="$(cd -P "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
-source "$DOTFILES_DIR/aliases/common.bash"
-source "$DOTFILES_DIR/aliases/pacman.bash"
-source "$DOTFILES_DIR/aliases/paru.bash"
-source "$DOTFILES_DIR/aliases/ls.bash"
-source "$DOTFILES_DIR/aliases/bat.bash"
+
+aliases=(common pacman paru ls bat)
+for alias_src in "${aliases[@]}"; do
+    source "$DOTFILES_DIR/aliases/$alias_src.bash"
+done
