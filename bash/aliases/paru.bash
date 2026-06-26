@@ -1,0 +1,5 @@
+alias pars='paru -S'
+alias parsi='paru -Si'
+alias parss='paru -Ss'
+alias parsu='paru -Suy'
+alias parrs='paru -Rns'

@@ -1,0 +1,8 @@
+alias pacs='pacman -S'
+alias pacsi='pacman -Si'
+alias pacss='pacman -Ss'
+alias pacsc='pacman -Sc'
+alias pacsu='pacman -Suy'
+alias pacrs='pacman -Rns'
+alias pacqe='pacman -Qe'
+alias pacqi='pacman -Qi'
