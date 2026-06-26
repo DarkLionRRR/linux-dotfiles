@@ -39,7 +39,7 @@ print_log "INFO" "Checking depedencies..."
 deps=(
     base-devel git man-db man-pages
     neovim bat fastfetch cargo tmux
-    bash-completion
+    bash-completion starship
 )
 for pkg in "${deps[@]}"; do
     if ! pacman -Q "$pkg" >/dev/null 2>&1; then
@@ -51,7 +51,7 @@ for pkg in "${deps[@]}"; do
     fi
 done
 
-print_log "INFO" "Checking for paru..."
+print_log "INFO" "Checking paru..."
 if ! pacman -Q paru >/dev/null 2>&1; then
     tmp_dir=$(mktemp -d)
 
@@ -92,6 +92,15 @@ if [[ ! -f "$HOME/.bashrc" ]]; then
     print_log "SUCCESS" "Bash configuration installed."
 else
     print_log "WARN" "$C_BOLD~/.bashrc$C_RESET already exists."
+fi
+
+# starship
+print_log "INFO" "Configuring starship..."
+if [[ ! -f "$HOME/.config/starship.toml" ]]; then
+    ln -s "$SCRIPT_DIR/starship/starship.toml" "$HOME/.config/starship.toml"
+    print_log "SUCCESS" "Starship configuration installed."
+else
+    print_log "WARN" "$C_BOLD~/.config/starship.toml$C_RESET already exists."
 fi
 
 print_log "FINISH" "Installation completed. Restart your terminal."
