@@ -17,11 +17,14 @@ HISTCONTROL=ignoredups:erasedups
 HISTTIMEFORMAT='%F %T '
 PROMPT_COMMAND='history -a; history -c; history -r'
 
+eval "$(starship init bash)"
+eval "$(batpipe)"
+
 export EDITOR=nvim
 export VISUAL=nvim
 export MANPAGER='nvim +Man!'
-
-eval "$(starship init bash)"
+export LS_COLORS="$(vivid generate catppuccin-macchiato)"
+export BAT_THEME="Catppuccin Mocha"
 
 DOTFILES_DIR="$(cd -P "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 

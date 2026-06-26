@@ -22,6 +22,10 @@ print_log() {
     printf "%s%s[%s]:%s %s\n" "${log_types[$1]}" "$C_BOLD" "$1" "$C_RESET" "${*:2}"
 }
 
+bold() {
+    printf "%s%s%s" "$C_BOLD" "$*" "$C_RESET"
+}
+
 # ==== MAIN SCRIPT ====
 echo "---- Starting installation -----"
 
@@ -39,7 +43,8 @@ print_log "INFO" "Checking depedencies..."
 deps=(
     base-devel git man-db man-pages
     neovim bat fastfetch cargo tmux
-    bash-completion starship
+    bash-completion starship vivid fd
+    ripgrep git-delta bat-extras
 )
 for pkg in "${deps[@]}"; do
     if ! pacman -Q "$pkg" >/dev/null 2>&1; then
@@ -82,7 +87,7 @@ if [[ ! -f "$HOME/.inputrc" ]]; then
     ln -s "$SCRIPT_DIR/readline/inputrc" "$HOME/.inputrc" 
     print_log "SUCCESS" "Readline configuration installed."
 else
-    print_log "WARN" "$C_BOLD~/.inputrc$C_RESET already exists."
+    print_log "WARN" "$(bold "~/.inputrc") already exists."
 fi
 
 # bash
@@ -91,8 +96,20 @@ if [[ ! -f "$HOME/.bashrc" ]]; then
     ln -s "$SCRIPT_DIR/bash/bashrc.bash" "$HOME/.bashrc"
     print_log "SUCCESS" "Bash configuration installed."
 else
-    print_log "WARN" "$C_BOLD~/.bashrc$C_RESET already exists."
+    print_log "WARN" "$(bold ~/.bashrc) already exists."
 fi
+
+# tools
+print_log "INFO" "Configuring ripgrep..."
+if [[ ! -f "$HOME/.ripgreprc" ]]; then
+    ln -s "$SCRIPT_DIR/ripgrep/ripgreprc" "$HOME/.ripgreprc"
+    print_log "SUCCESS" "Ripgrep configuration installed."
+else
+    print_log "WARN" "$(bold ~/.ripgreprc) already exists."
+fi
+print_log "INFO" "Configuring git..."
+ln -sf "$SCRIPT_DIR/git/gitconfig" "$HOME/.gitconfig"
+print_log "SUCCESS" "GIT configuration installed."
 
 # starship
 print_log "INFO" "Configuring starship..."
@@ -100,7 +117,7 @@ if [[ ! -f "$HOME/.config/starship.toml" ]]; then
     ln -s "$SCRIPT_DIR/starship/starship.toml" "$HOME/.config/starship.toml"
     print_log "SUCCESS" "Starship configuration installed."
 else
-    print_log "WARN" "$C_BOLD~/.config/starship.toml$C_RESET already exists."
+    print_log "WARN" "$(bold "~/.config/starship.toml") already exists."
 fi
 
 print_log "FINISH" "Installation completed. Restart your terminal."
