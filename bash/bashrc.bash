@@ -21,6 +21,8 @@ export EDITOR=nvim
 export VISUAL=nvim
 export MANPAGER='nvim +Man!'
 
+eval "$(starship init bash)"
+
 DOTFILES_DIR="$(cd -P "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 
 aliases=(common pacman paru ls bat)
