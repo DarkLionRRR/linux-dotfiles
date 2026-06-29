@@ -1,0 +1,5 @@
+alias ls="eza --time-style long-iso --group-directories-first --binary --icons"
+alias l="ls"
+alias ll="ls --long"
+alias la="ll --almost-all"
+alias lt="ls --tree --level 5"

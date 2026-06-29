@@ -44,7 +44,8 @@ deps=(
     base-devel git man-db man-pages
     neovim bat fastfetch cargo tmux
     bash-completion starship vivid fd
-    ripgrep git-delta bat-extras
+    ripgrep git-delta bat-extras fzf
+    eza
 )
 for pkg in "${deps[@]}"; do
     if ! pacman -Q "$pkg" >/dev/null 2>&1; then
