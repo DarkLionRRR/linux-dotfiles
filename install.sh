@@ -100,6 +100,15 @@ else
     print_log "WARN" "$(bold ~/.bashrc) already exists."
 fi
 
+# tmux
+print_log "INFO" "Configuring tmux..."
+if [[ ! -d "$HOME/.config/tmux" ]]; then
+    ln -s "$SCRIPT_DIR/tmux/" "$HOME/.config/tmux"
+    print_log "SUCCESS" "Tmux configuration installed."
+else
+    print_log "WARN" "$(bold ~/.config/tmux) already exists."
+fi
+
 # tools
 print_log "INFO" "Configuring ripgrep..."
 if [[ ! -f "$HOME/.ripgreprc" ]]; then
