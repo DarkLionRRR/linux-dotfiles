@@ -20,6 +20,7 @@ PROMPT_COMMAND='history -a; history -c; history -r'
 eval "$(starship init bash)"
 eval "$(batpipe)"
 eval "$(fzf --bash)"
+eval "$(zoxide init bash)"
 
 export EDITOR=nvim
 export VISUAL=nvim
@@ -43,10 +44,14 @@ export FZF_ALT_C_OPTS="--preview 'eza --icons=always --tree --color=always {} | 
 export FZF_DEFAULT_COMMAND='fd --hidden --strip-cwd-prefix --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="$FZF_DEFAULT_COMMAND --type=d"
+export _ZO_EXCLUDE_DIRS="$HOME:*/.git/*"
+export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS \
+  --preview 'eza --icons=always --tree --color=always {2..} | head -200'"
+export _ZO_ECHO=0
 
 DOTFILES_DIR="$(cd -P "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 
-aliases=(common pacman paru bat)
+aliases=(common pacman paru bat git)
 for alias_src in "${aliases[@]}"; do
     source "$DOTFILES_DIR/aliases/$alias_src.bash"
 done
