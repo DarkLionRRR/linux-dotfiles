@@ -41,11 +41,11 @@ sudo pacman -Suy --noconfirm
 
 print_log "INFO" "Checking depedencies..."
 deps=(
-    base-devel git man-db man-pages
-    neovim bat fastfetch cargo tmux
-    bash-completion starship vivid fd
-    ripgrep git-delta bat-extras fzf
-    eza
+    base-devel diffutils git man-db
+    man-pages neovim bat fastfetch
+    cargo tmux bash-completion starship
+    vivid fd ripgrep git-delta bat-extras
+    fzf eza zoxide
 )
 for pkg in "${deps[@]}"; do
     if ! pacman -Q "$pkg" >/dev/null 2>&1; then
@@ -117,9 +117,18 @@ if [[ ! -f "$HOME/.ripgreprc" ]]; then
 else
     print_log "WARN" "$(bold ~/.ripgreprc) already exists."
 fi
+
 print_log "INFO" "Configuring git..."
 ln -sf "$SCRIPT_DIR/git/gitconfig" "$HOME/.gitconfig"
 print_log "SUCCESS" "GIT configuration installed."
+
+print_log "INFO" "Configuring fastfetch..."
+if [[ ! -d "$HOME/.config/fastfetch" ]]; then
+    ln -s "$SCRIPT_DIR/fastfetch/" "$HOME/.config/fastfetch"
+    print_log "SUCCESS" "Fastfetch configuration installed."
+else
+    print_log "WARN" "$(bold ~/.config/fastfetch) already exists."
+fi
 
 # starship
 print_log "INFO" "Configuring starship..."
