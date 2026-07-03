@@ -3,12 +3,12 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-C_RESET=$'\e[0m'
-C_BOLD=$'\e[1m'
-C_BLUE=$'\e[34m'
-C_GREEN=$'\e[32m'
-C_YELLOW=$'\e[33m'
-C_RED=$'\e[31m'
+C_RESET=$(tput sgr0)
+C_BOLD=$(tput bold)
+C_BLUE=$(tput setaf 4)
+C_GREEN=$(tput setaf 2)
+C_YELLOW=$(tput setaf 3)
+C_RED=$(tput setaf 1)
 
 declare -A log_types=(
     [INFO]="$C_BLUE"
@@ -18,15 +18,9 @@ declare -A log_types=(
     [ERROR]="$C_RED"
 ) 
 
-print_log() {
-    printf "%s%s[%s]:%s %s\n" "${log_types[$1]}" "$C_BOLD" "$1" "$C_RESET" "${*:2}"
-}
+bold() { printf "%s%s%s" "$C_BOLD" "$*" "$C_RESET"; }
+print_log() { printf "%s%s %s\n" "${log_types[$1]}" "$(bold "[$1]:")" "${*:2}"; }
 
-bold() {
-    printf "%s%s%s" "$C_BOLD" "$*" "$C_RESET"
-}
-
-# ==== MAIN SCRIPT ====
 echo "---- Starting installation -----"
 
 print_log "INFO" "Checking for pacman..."
@@ -35,27 +29,33 @@ if ! command -v pacman >/dev/null 2>&1; then
     exit 1
 fi
 
-# install packages
 print_log "WARN" "Refresh and upgrade packages..."
 sudo pacman -Suy --noconfirm
 
-print_log "INFO" "Checking depedencies..."
-deps=(
+print_log "INFO" "Checking packages..."
+pkgs=(
     base-devel diffutils git man-db
     man-pages neovim bat fastfetch
     cargo tmux bash-completion starship
     vivid fd ripgrep git-delta bat-extras
     fzf eza zoxide
 )
-for pkg in "${deps[@]}"; do
+missing_pkgs=()
+for pkg in "${pkgs[@]}"; do
     if ! pacman -Q "$pkg" >/dev/null 2>&1; then
-        print_log "WARN" "Installing $pkg..."
-        sudo pacman -S --noconfirm "$pkg"
-        print_log "SUCCESS" "$pkg installed."
+        missing_pkgs+=("$pkg")
+        print_log "WARN" "$pkg is missing."
     else
-        print_log "SUCCESS" "$pkg is already installed."
+        print_log "SUCCESS" "$pkg found."
     fi
 done
+if ((${#missing_pkgs[@]})); then
+    print_log "INFO" "Installing missing packages..."
+    sudo pacman -S --noconfirm "${missing_pkgs[@]}"
+    print_log "SUCCESS" "All missing packages installed."
+else
+    print_log "SUCCESS" "All packages are already installed."
+fi
 
 print_log "INFO" "Checking paru..."
 if ! pacman -Q paru >/dev/null 2>&1; then
@@ -82,61 +82,24 @@ else
     print_log "SUCCESS" "paru is already installed."
 fi
 
-# readline
-print_log "INFO" "Configuring readline..."
-if [[ ! -f "$HOME/.inputrc" ]]; then
-    ln -s "$SCRIPT_DIR/readline/inputrc" "$HOME/.inputrc" 
-    print_log "SUCCESS" "Readline configuration installed."
-else
-    print_log "WARN" "$(bold "~/.inputrc") already exists."
-fi
-
-# bash
-print_log "INFO" "Configuring bash..."
-if [[ ! -f "$HOME/.bashrc" ]]; then
-    ln -s "$SCRIPT_DIR/bash/bashrc.bash" "$HOME/.bashrc"
-    print_log "SUCCESS" "Bash configuration installed."
-else
-    print_log "WARN" "$(bold ~/.bashrc) already exists."
-fi
-
-# tmux
-print_log "INFO" "Configuring tmux..."
-if [[ ! -d "$HOME/.config/tmux" ]]; then
-    ln -s "$SCRIPT_DIR/tmux/" "$HOME/.config/tmux"
-    print_log "SUCCESS" "Tmux configuration installed."
-else
-    print_log "WARN" "$(bold ~/.config/tmux) already exists."
-fi
-
-# tools
-print_log "INFO" "Configuring ripgrep..."
-if [[ ! -f "$HOME/.ripgreprc" ]]; then
-    ln -s "$SCRIPT_DIR/ripgrep/ripgreprc" "$HOME/.ripgreprc"
-    print_log "SUCCESS" "Ripgrep configuration installed."
-else
-    print_log "WARN" "$(bold ~/.ripgreprc) already exists."
-fi
-
-print_log "INFO" "Configuring git..."
-ln -sf "$SCRIPT_DIR/git/gitconfig" "$HOME/.gitconfig"
-print_log "SUCCESS" "GIT configuration installed."
-
-print_log "INFO" "Configuring fastfetch..."
-if [[ ! -d "$HOME/.config/fastfetch" ]]; then
-    ln -s "$SCRIPT_DIR/fastfetch/" "$HOME/.config/fastfetch"
-    print_log "SUCCESS" "Fastfetch configuration installed."
-else
-    print_log "WARN" "$(bold ~/.config/fastfetch) already exists."
-fi
-
-# starship
-print_log "INFO" "Configuring starship..."
-if [[ ! -f "$HOME/.config/starship.toml" ]]; then
-    ln -s "$SCRIPT_DIR/starship/starship.toml" "$HOME/.config/starship.toml"
-    print_log "SUCCESS" "Starship configuration installed."
-else
-    print_log "WARN" "$(bold "~/.config/starship.toml") already exists."
-fi
+declare -A configs=(
+    [".gitconfig"]="git/gitconfig"
+    [".inputrc"]="readline/inputrc"
+    [".bashrc"]="bash/bashrc.bash"
+    [".config/tmux"]="tmux/"
+    [".ripgreprc"]="ripgrep/ripgreprc"
+    [".config/fastfetch"]="fastfetch/"
+    [".config/starship.toml"]="starship/starship.toml"
+)
+for config in "${!configs[@]}"; do
+    print_log "INFO" "Configuring $(bold "~/$config")..."
+    if [[ ! -e "$HOME/$config" ]]; then
+        mkdir -p "$(dirname "$HOME/$config")"
+        ln -s "$SCRIPT_DIR/${configs[$config]}" "$HOME/$config"
+        print_log "SUCCESS" "Configuration installed."
+    else
+        print_log "WARN" "$(bold "~/$config") already exists."
+    fi
+done
 
 print_log "FINISH" "Installation completed. Restart your terminal."
