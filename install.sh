@@ -102,4 +102,9 @@ for config in "${!configs[@]}"; do
     fi
 done
 
+# config pacman
+print_log "INFO" "Configuring $(bold "/etc/pacman.conf")..."
+sudo ln -sf "$SCRIPT_DIR/pacman/pacman.conf" "/etc/pacman.conf"
+print_log "SUCCESS" "Configuration installed."
+
 print_log "FINISH" "Installation completed. Restart your terminal."

@@ -6,15 +6,16 @@ format = """
 $directory\
 $git_branch\
 $git_status\
+$fill\
 $c\
 $rust\
 $golang\
 $nodejs\
+$bun\
 $php\
 $python\
 $lua\
-$status\
-\n$character\
+\n$character$status\
 """
 
 palette = 'catppuccin_macchiato'
@@ -42,8 +43,16 @@ format = '[[$symbol $branch ](fg:yellow)]($style)'
 style = "bg:yellow"
 format = '[[($all_status$ahead_behind )](fg:yellow)]($style)'
 
+[fill]
+symbol = " "
+
 [nodejs]
 symbol = ""
+format = '[[$symbol( $version) ](fg:mauve)]($style)'
+
+[bun]
+symbol = ""
+style = "bg:green"
 format = '[[$symbol( $version) ](fg:mauve)]($style)'
 
 [c]
