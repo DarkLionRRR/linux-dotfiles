@@ -2,6 +2,8 @@ alias gt='git'
 alias gti='git init'
 alias gtb='git branch'
 alias gtbc='git branch --show-current'
+alias gtbd='git branch --delete'
+alias gtbdf='git branch --delete --force'
 alias gtsw='git switch'
 alias gtswc='git switch -c'
 alias gtst='git status'
@@ -16,3 +18,18 @@ alias gtd='git diff'
 alias gtl='git log'
 alias gtsh='git show'
 alias gtc='git commit'
+alias gtsm='git submodule'
+alias gtsmi='git submodule init'
+alias gtsmdi='git submodule deinit'
+alias gtsma='git submodule add'
+alias gtsmu='git submodule update'
+alias gtsmur='git submodule update --remote'
+
+# delete all branch except "main/master" and current branch
+git_b_delete_all() {
+    git branch --delete $(\
+        git branch --format '%(refname:lstrip=2)' \
+        | rg -v -F -e 'main' -e 'master' -e $(git branch --show-current)\
+    )
+}
+alias gtbda='git_b_delete_all'
