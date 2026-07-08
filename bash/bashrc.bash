@@ -61,3 +61,8 @@ if command -v eza >/dev/null 2>&1; then
 else
     source "$DOTFILES_DIR/aliases/ls.bash"
 fi
+
+if [[ -f "$DOTFILES_DIR/../.env" ]]; then
+    source "$DOTFILES_DIR/../.env"
+    [[ -n $NVIM_DEV_CONFIG ]] && alias vd="nvim -u $NVIM_DEV_CONFIG"
+fi

@@ -1,8 +1,8 @@
 [user]
-	name = Leo Prusov
-	email = l.prusov@napopravku.ru
+	name = DarkLionRRR
+	email = lllevaa28@gmail.com
 [init]
-	branchDefault = main
+	defaultBranch = main
 [core]
     pager = delta
 [interactive]
@@ -13,3 +13,5 @@
     line-numbers = true
 [merge]
     conflictStyle = zdiff3
+[includeIf "gitdir:~/napopravku/"]
+    path = ~/gitwork.inc

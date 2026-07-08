@@ -107,4 +107,10 @@ print_log "INFO" "Configuring $(bold "/etc/pacman.conf")..."
 sudo ln -sf "$SCRIPT_DIR/pacman/pacman.conf" "/etc/pacman.conf"
 print_log "SUCCESS" "Configuration installed."
 
+# create .env
+if [[ ! -f "$SCRIPT_DIR/.env" ]]; then
+    cp "$SCRIPT_DIR/.env.example" "$SCRIPT_DIR/.env"
+    print_log "SUCCESS" "Created $(bold ".env") using $(bold .env.example)"
+fi
+
 print_log "FINISH" "Installation completed. Restart your terminal."
