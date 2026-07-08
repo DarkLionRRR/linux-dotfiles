@@ -64,5 +64,5 @@ fi
 
 if [[ -f "$DOTFILES_DIR/../.env" ]]; then
     source "$DOTFILES_DIR/../.env"
-    [[ -n $NVIM_DEV_CONFIG ]] && alias vd="nvim -u $NVIM_DEV_CONFIG"
+    [[ -n $NVIM_DEV_CONFIG ]] && alias vd="NVIM_APPNAME=$NVIM_DEV_CONFIG nvim"
 fi

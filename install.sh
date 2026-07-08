@@ -90,6 +90,7 @@ declare -A configs=(
     [".ripgreprc"]="ripgrep/ripgreprc"
     [".config/fastfetch"]="fastfetch/"
     [".config/starship.toml"]="starship/starship.toml"
+    [".config/nvim"]="nvim/"
 )
 for config in "${!configs[@]}"; do
     print_log "INFO" "Configuring $(bold "~/$config")..."
