@@ -1,4 +1,4 @@
-alias ls="eza --time-style long-iso --group-directories-first --binary --icons"
+alias ls="eza --time-style long-iso --binary --icons --group-directories-first"
 alias l="ls"
 alias ll="ls --long"
 alias la="ll --almost-all"
