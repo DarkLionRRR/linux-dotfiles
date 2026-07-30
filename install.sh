@@ -38,7 +38,7 @@ pkgs=(
     man-pages neovim bat fastfetch
     cargo tmux bash-completion starship
     vivid fd ripgrep git-delta bat-extras
-    fzf eza zoxide
+    fzf eza zoxide lua-language-server
 )
 missing_pkgs=()
 for pkg in "${pkgs[@]}"; do
@@ -113,5 +113,7 @@ if [[ ! -f "$SCRIPT_DIR/.env" ]]; then
     cp "$SCRIPT_DIR/.env.example" "$SCRIPT_DIR/.env"
     print_log "SUCCESS" "Created $(bold ".env") using $(bold .env.example)"
 fi
+
+mkdir -pv "$HOME/.local/bin"
 
 print_log "FINISH" "Installation completed. Restart your terminal."
