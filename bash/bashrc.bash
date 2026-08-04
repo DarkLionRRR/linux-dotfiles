@@ -1,4 +1,4 @@
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$HOME/.config/composer/vendor/bin/:$PATH"
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
@@ -53,7 +53,7 @@ export _ZO_ECHO=0
 
 DOTFILES_DIR="$(cd -P "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 
-aliases=(common pacman paru bat git)
+aliases=(common pacman paru bat git docker docker-compose custom)
 for alias_src in "${aliases[@]}"; do
     source "$DOTFILES_DIR/aliases/$alias_src.bash"
 done

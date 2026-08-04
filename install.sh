@@ -39,6 +39,11 @@ pkgs=(
     cargo tmux bash-completion starship
     vivid fd ripgrep git-delta bat-extras
     fzf eza zoxide lua-language-server
+    zip unzip ttf-firacode-nerd alacritty
+    xdg-utils polkit-kde-agent go docker-buildx
+    docker docker-compose noto-fonts-cjk
+    dnsmasq bind php php-fpm php-gd php-sqlite
+    php-pgsql composer nodejs npm
 )
 missing_pkgs=()
 for pkg in "${pkgs[@]}"; do
@@ -82,15 +87,38 @@ else
     print_log "SUCCESS" "paru is already installed."
 fi
 
+print_log "INFO" "Checking AUR-packages..."
+pkgs=(
+    flclashx-bin phpactor
+)
+missing_pkgs=()
+for pkg in "${pkgs[@]}"; do
+    if ! paru -Q "$pkg" >/dev/null 2>&1; then
+        missing_pkgs+=("$pkg")
+        print_log "WARN" "$pkg is missing."
+    else
+        print_log "SUCCESS" "$pkg found."
+    fi
+done
+if ((${#missing_pkgs[@]})); then
+    print_log "INFO" "Installing missing packages..."
+    paru -S "${missing_pkgs[@]}"
+    print_log "SUCCESS" "All missing packages installed."
+else
+    print_log "SUCCESS" "All packages are already installed."
+fi
+
 declare -A configs=(
     [".gitconfig"]="git/gitconfig"
+    ["gitwork.inc"]="git/gitwork.inc"
     [".inputrc"]="readline/inputrc"
     [".bashrc"]="bash/bashrc.bash"
     [".config/tmux"]="tmux/"
     [".ripgreprc"]="ripgrep/ripgreprc"
     [".config/fastfetch"]="fastfetch/"
     [".config/starship.toml"]="starship/starship.toml"
-    [".config/nvim"]="nvim/"
+    # [".config/nvim"]="nvim/"
+    [".config/alacritty"]="alacritty"
 )
 for config in "${!configs[@]}"; do
     print_log "INFO" "Configuring $(bold "~/$config")..."
@@ -114,6 +142,35 @@ if [[ ! -f "$SCRIPT_DIR/.env" ]]; then
     print_log "SUCCESS" "Created $(bold ".env") using $(bold .env.example)"
 fi
 
+# create user-local bin directory
 mkdir -pv "$HOME/.local/bin"
+
+# docker
+print_log "INFO" "Checking $(bold "docker") group..."
+if getent group docker >/dev/null; then
+    print_log "WARN" "Group $(bold "docker") already exists."
+else
+    sudo groupadd docker
+    print_log "INFO" "Group created."
+fi
+print_log "INFO" "Check user group..."
+usr="$(id -un)"
+if id -nG "$usr" | grep -qw docker; then
+    print_log "WARN" "User added to the $(bold "docker") group."
+    print_log "WARN" "Log out and log back in for the change to take effect."
+else
+    sudo usermod -aG docker "$usr"
+    print_log "INFO" "$usr added to $(bold "docker") group."
+fi
+print_log "INFO" "Enable $(bold "docker.service")..."
+sudo systemctl enable docker.service
+print_log "INFO" "Enable $(bold "containerd.service")..."
+sudo systemctl enable containerd.service
+
+# laravel-lsp
+if command -v composer >/dev/null 2>&1 && ! command -v laravel-lsp >/dev/null 2>&1; then
+  composer global require laravel/lsp
+  print_log "SUCCESS" "$(bold "laravel-lsp") installed."
+fi
 
 print_log "FINISH" "Installation completed. Restart your terminal."
