@@ -1,0 +1,12 @@
+[general]
+live_config_reload = true
+
+[window]
+padding = { x = 8, y = 8 }
+dynamic_padding = true
+decorations = "None"
+opacity = 0.8
+
+[font]
+normal = { family = "FiraCode Nerd Font", style = "Regular" }
+size = 11.0
