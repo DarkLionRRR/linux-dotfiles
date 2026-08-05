@@ -43,7 +43,8 @@ pkgs=(
     xdg-utils polkit-kde-agent go docker-buildx
     docker docker-compose noto-fonts-cjk
     dnsmasq bind php php-fpm php-gd php-sqlite
-    php-pgsql composer nodejs npm
+    php-pgsql composer nodejs npm stylua gopls
+    golangci-lint
 )
 missing_pkgs=()
 for pkg in "${pkgs[@]}"; do
@@ -89,7 +90,7 @@ fi
 
 print_log "INFO" "Checking AUR-packages..."
 pkgs=(
-    flclashx-bin phpactor
+    flclashx-bin phpactor golangci-lint-langserver
 )
 missing_pkgs=()
 for pkg in "${pkgs[@]}"; do
