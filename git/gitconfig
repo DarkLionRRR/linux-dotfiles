@@ -15,3 +15,5 @@
     conflictStyle = zdiff3
 [includeIf "gitdir:~/napopravku/"]
     path = ~/gitwork.inc
+[pull]
+	rebase = true
