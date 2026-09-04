@@ -1,4 +1,4 @@
-export PATH="$HOME/.local/bin:$HOME/.config/composer/vendor/bin/:$PATH"
+export PATH="$HOME/.local/bin:$HOME/.config/composer/vendor/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return

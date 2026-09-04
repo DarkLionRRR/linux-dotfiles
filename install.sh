@@ -43,8 +43,10 @@ pkgs=(
     xdg-utils polkit-kde-agent go docker-buildx
     docker docker-compose noto-fonts-cjk
     dnsmasq bind php php-fpm php-gd php-sqlite
-    php-pgsql composer nodejs npm stylua gopls
-    golangci-lint
+    php-pgsql composer nodejs npm stylua go-task
+    jq python python-pip uv noto-fonts-emoji
+    tree bash-language-server tree-sitter-cli
+    gopls rust-analyzer
 )
 missing_pkgs=()
 for pkg in "${pkgs[@]}"; do
@@ -89,9 +91,7 @@ else
 fi
 
 print_log "INFO" "Checking AUR-packages..."
-pkgs=(
-    flclashx-bin phpactor golangci-lint-langserver
-)
+pkgs=(postman-bin)
 missing_pkgs=()
 for pkg in "${pkgs[@]}"; do
     if ! paru -Q "$pkg" >/dev/null 2>&1; then
@@ -118,8 +118,9 @@ declare -A configs=(
     [".ripgreprc"]="ripgrep/ripgreprc"
     [".config/fastfetch"]="fastfetch/"
     [".config/starship.toml"]="starship/starship.toml"
-    # [".config/nvim"]="nvim/"
+    [".config/nvim"]="nvim/"
     [".config/alacritty"]="alacritty"
+    [".config/mako"]="mako"
 )
 for config in "${!configs[@]}"; do
     print_log "INFO" "Configuring $(bold "~/$config")..."
@@ -131,6 +132,15 @@ for config in "${!configs[@]}"; do
         print_log "WARN" "$(bold "~/$config") already exists."
     fi
 done
+
+# reload mako
+print_log "INFO" "Reload $(bold "mako")..."
+if command -v makoctl >/dev/null 2>&1; then
+    makoctl reload
+    print_log "SUCCESS" "Mako realoaded."
+else
+    print_log "WARN" "$(bold "makoctl") no available!"
+fi
 
 # config pacman
 print_log "INFO" "Configuring $(bold "/etc/pacman.conf")..."
@@ -168,10 +178,49 @@ sudo systemctl enable docker.service
 print_log "INFO" "Enable $(bold "containerd.service")..."
 sudo systemctl enable containerd.service
 
-# laravel-lsp
-if command -v composer >/dev/null 2>&1 && ! command -v laravel-lsp >/dev/null 2>&1; then
-  composer global require laravel/lsp
-  print_log "SUCCESS" "$(bold "laravel-lsp") installed."
+# install phpantom_lsp
+print_log "INFO" "Installing $(bold "phpantom_lsp")..."
+if command -v cargo >/dev/null 2>&1; then
+    cargo install phpantom_lsp --locked
+    print_log "SUCCESS" "$(bold "phpantom_lsp") installed."
+else
+    print_log "WARN" "$(bold "cargo") not installed."
+fi
+
+# install sqls
+print_log "INFO" "Installing $(bold "sqls")..."
+if command -v go >/dev/null 2>&1; then
+    go install github.com/sqls-server/sqls@latest
+    print_log "SUCCESS" "$(bold "sqls") installed."
+else
+    print_log "WARN" "$(bold "go") not installed."
+fi
+
+# install yaml-language-server
+print_log "INFO" "Installing $(bold "yaml-language-server")..."
+if command -v npm >/dev/null 2>&1; then
+    sudo npm install -g yaml-language-server
+    print_log "SUCCESS" "$(bold "yaml-language-server") installed."
+else
+    print_log "WARN" "$(bold "npm") not installed."
+fi
+
+# install basedpyright
+print_log "INFO" "Installing $(bold "basedpyright")..."
+if command -v uv >/dev/null 2>&1; then
+    uv tool install basedpyright
+    print_log "SUCCESS" "$(bold "basedpyright") installed."
+else
+    print_log "WARN" "$(bold "uv") not installed."
+fi
+
+# install ruff
+print_log "INFO" "Installing $(bold "ruff")..."
+if command -v uv >/dev/null 2>&1; then
+    uv tool install ruff
+    print_log "SUCCESS" "$(bold "ruff") installed."
+else
+    print_log "WARN" "$(bold "uv") not installed."
 fi
 
 print_log "FINISH" "Installation completed. Restart your terminal."
