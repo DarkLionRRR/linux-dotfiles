@@ -29,6 +29,11 @@ if ! command -v pacman >/dev/null 2>&1; then
     exit 1
 fi
 
+# config pacman
+print_log "INFO" "Configuring $(bold "/etc/pacman.conf")..."
+sudo ln -sf "$SCRIPT_DIR/pacman/pacman.conf" "/etc/pacman.conf"
+print_log "SUCCESS" "Configuration installed."
+
 print_log "WARN" "Refresh and upgrade packages..."
 sudo pacman -Suy --noconfirm
 
@@ -36,8 +41,8 @@ print_log "INFO" "Checking packages..."
 pkgs=(
     base-devel diffutils git man-db
     man-pages neovim bat fastfetch
-    cargo tmux bash-completion starship
-    vivid fd ripgrep git-delta bat-extras
+    tmux bash-completion starship fd
+    vivid ripgrep git-delta bat-extras
     fzf eza zoxide lua-language-server
     zip unzip ttf-firacode-nerd alacritty
     xdg-utils polkit-kde-agent go docker-buildx
@@ -46,7 +51,7 @@ pkgs=(
     php-pgsql composer nodejs npm stylua go-task
     jq python python-pip uv noto-fonts-emoji
     tree bash-language-server tree-sitter-cli
-    gopls rust-analyzer
+    gopls
 )
 missing_pkgs=()
 for pkg in "${pkgs[@]}"; do
@@ -60,50 +65,6 @@ done
 if ((${#missing_pkgs[@]})); then
     print_log "INFO" "Installing missing packages..."
     sudo pacman -S --noconfirm "${missing_pkgs[@]}"
-    print_log "SUCCESS" "All missing packages installed."
-else
-    print_log "SUCCESS" "All packages are already installed."
-fi
-
-print_log "INFO" "Checking paru..."
-if ! pacman -Q paru >/dev/null 2>&1; then
-    tmp_dir=$(mktemp -d)
-
-    print_log "INFO" "Cloning paru repository"
-    rm -rf "$tmp_dir"
-    git clone --depth 1 https://aur.archlinux.org/paru.git "$tmp_dir"
-    cd "$tmp_dir"
-
-    bat PKGBUILD
-    read -r -p "Continue installation? [y/N] " answer
-    if [[ ! "$answer" =~ ^[yY]|[yY][eE][sS]$ ]]; then
-        print_log "WARN" "paru installation canceled."
-        rm -rf $tmp_dir
-        exit 0
-    fi
-
-    print_log "WARN" "Installing paru..."
-    makepkg -si
-
-    rm -rf $tmp_dir
-else
-    print_log "SUCCESS" "paru is already installed."
-fi
-
-print_log "INFO" "Checking AUR-packages..."
-pkgs=(postman-bin)
-missing_pkgs=()
-for pkg in "${pkgs[@]}"; do
-    if ! paru -Q "$pkg" >/dev/null 2>&1; then
-        missing_pkgs+=("$pkg")
-        print_log "WARN" "$pkg is missing."
-    else
-        print_log "SUCCESS" "$pkg found."
-    fi
-done
-if ((${#missing_pkgs[@]})); then
-    print_log "INFO" "Installing missing packages..."
-    paru -S "${missing_pkgs[@]}"
     print_log "SUCCESS" "All missing packages installed."
 else
     print_log "SUCCESS" "All packages are already installed."
@@ -133,6 +94,37 @@ for config in "${!configs[@]}"; do
     fi
 done
 
+# install rust
+install_rs() {
+    local tmp_dir=$1
+    
+    if ! curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o "$tmp_dir/rs_install.sh"; then
+        print_log "ERROR" "$(bold "rust") not downloaded."
+        return 0
+    fi
+
+    bat "$tmp_dir/rs_install.sh"
+    read -r -p "Continue installation? [y/N] " answer
+    if [[ ! "$answer" =~ ^[yY]|[yY][eE][sS]$ ]]; then
+        print_log "WARN" "$(bold "rust") installation canceled."
+        return 0
+    fi
+
+    sh "$tmp_dir/rs_install.sh"
+    if [[ $? == 0 ]]; then
+        print_log "SUCCESS" "$(bold "rust") installed."
+    else
+        print_log "ERROR" "$(bold "rust") not installed."
+    fi
+
+    return 0
+}
+
+print_log "INFO" "Installing $(bold "rust")..."
+tmp_dir=$(mktemp -d)
+install_rs "$tmp_dir"
+rm -rf "$tmp_dir"
+
 # reload mako
 print_log "INFO" "Reload $(bold "mako")..."
 if command -v makoctl >/dev/null 2>&1; then
@@ -141,11 +133,6 @@ if command -v makoctl >/dev/null 2>&1; then
 else
     print_log "WARN" "$(bold "makoctl") no available!"
 fi
-
-# config pacman
-print_log "INFO" "Configuring $(bold "/etc/pacman.conf")..."
-sudo ln -sf "$SCRIPT_DIR/pacman/pacman.conf" "/etc/pacman.conf"
-print_log "SUCCESS" "Configuration installed."
 
 # create .env
 if [[ ! -f "$SCRIPT_DIR/.env" ]]; then
@@ -221,6 +208,15 @@ if command -v uv >/dev/null 2>&1; then
     print_log "SUCCESS" "$(bold "ruff") installed."
 else
     print_log "WARN" "$(bold "uv") not installed."
+fi
+
+# install typescript and typescript-language-server
+print_log "INFO" "Installing $(bold "typescript and typescript-language-server")..."
+if command -v npm >/dev/null 2>&1; then
+    sudo npm install -g typescript-language-server typescript@6
+    print_log "SUCCESS" "$(bold "typescript and typescript-language-server") installed."
+else
+    print_log "WARN" "$(bold "npm") not installed."
 fi
 
 print_log "FINISH" "Installation completed. Restart your terminal."
